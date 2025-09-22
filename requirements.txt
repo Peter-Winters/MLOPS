@@ -4,4 +4,5 @@ scikit-learn
 matplotlib
 dataclasses
 pickle
+xgboost
 -e .
