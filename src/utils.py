@@ -7,6 +7,7 @@ import pickle
 from src.exception import CustomException
 
 from sklearn.metrics import r2_score
+from sklearn.model_selection import GridSearchCV
 
 def save_object(file_path, obj):
     '''
@@ -23,7 +24,7 @@ def save_object(file_path, obj):
         raise CustomException(e, sys)
 
 
-def evaluate_models(X_train, y_train, X_test, y_test, models):
+def evaluate_models(X_train, y_train, X_test, y_test, models, params):
     '''
     This function evaluates multiple machine learning models and returns their F1 scores.
     '''
@@ -32,6 +33,14 @@ def evaluate_models(X_train, y_train, X_test, y_test, models):
 
         for i in range(len(models)):
             model = list(models.values())[i]
+            param = params[list(models.keys())[i]]
+
+            # If there are parameters to tune, use GridSearchCV
+            gs = GridSearchCV(model, param, cv=3)
+            gs.fit(X_train, y_train)
+
+            model.set_params(**gs.best_params_)
+
             model.fit(X_train, y_train)
 
             y_train_pred = model.predict(X_train)
