@@ -3,7 +3,6 @@ pandas
 scikit-learn
 matplotlib
 dataclasses
-pickle
 xgboost
 flask
 -e .
