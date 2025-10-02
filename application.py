@@ -10,11 +10,11 @@ from src.pipeline.predict_pipeline import PredictPipeline, CustomData
 application = Flask(__name__)
 
 ## route for homepage
-@application.route('/')
-def index():
-    return render_template('index.html')
+# @application.route('/')
+# def index():
+#     return render_template('index.html')
 
-@application.route('/predict', methods=['GET','POST'])
+@application.route('/', methods=['GET','POST'])
 def predict_datapoint():
     if request.method == 'POST':
         try:
