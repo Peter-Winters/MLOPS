@@ -22,30 +22,30 @@ def predict_datapoint():
     if request.method=='GET':
         return render_template('home.html')
     else:
-        try:
-            data=CustomData(
-                gender=request.form.get('gender'),
-                race_ethnicity=request.form.get('race_ethnicity'),
-                parental_level_of_education=request.form.get('parental_level_of_education'),
-                lunch=request.form.get('lunch'),
-                test_preparation_course=request.form.get('test_preparation_course'),
-                reading_score=float(request.form.get('reading_score')),
-                writing_score=float(request.form.get('writing_score'))
-            )
-            
-            pred_df=data.get_data_as_data_frame()
-            application.logger.info("Prediction input DataFrame created successfully.")
+        print("--- STEP 1: Starting POST request processing. ---", flush=True)
 
-            predict_pipeline=PredictPipeline()
-            results=predict_pipeline.predict(pred_df)
-            application.logger.info(f"Prediction successful. Result: {results[0]}")
-            
-            return render_template('home.html',results=results[0])
+        data=CustomData(
+            gender=request.form.get('gender'),
+            race_ethnicity=request.form.get('race_ethnicity'),
+            parental_level_of_education=request.form.get('parental_level_of_education'),
+            lunch=request.form.get('lunch'),
+            test_preparation_course=request.form.get('test_preparation_course'),
+            reading_score=float(request.form.get('reading_score')),
+            writing_score=float(request.form.get('writing_score'))
+        )
+        
+        print("--- STEP 2: CustomData object created successfully. ---", flush=True)
 
-        except Exception as e:
-            application.logger.error("An error occurred during prediction: %s", e, exc_info=True)
-            return render_template('home.html', error="An error occurred. Please check the logs.")
+        pred_df = data.get_data_as_data_frame()
+        print("--- STEP 3: DataFrame created successfully. ---", flush=True)
+        print(pred_df, flush=True)
 
+        predict_pipeline = PredictPipeline()
+        print("--- STEP 4: PredictPipeline object created successfully. ---", flush=True)
 
+        results = predict_pipeline.predict(pred_df)
+        print("--- STEP 5: Prediction successful. ---", flush=True)
+
+        return render_template('home.html', results=results[0])
 if __name__=="__main__":       
     application.run(host='0.0.0.0', port=8000)    
