@@ -1,10 +1,6 @@
 from flask import Flask,request,render_template
-import numpy as np
-import pandas as pd
 import logging
 
-
-from sklearn.preprocessing import StandardScaler
 from src.pipeline.predict_pipeline import CustomData,PredictPipeline
 
 logging.basicConfig(level=logging.INFO)
