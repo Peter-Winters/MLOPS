@@ -36,7 +36,7 @@ def predict_datapoint():
         
         print("--- STEP 2: CustomData object created successfully. ---", flush=True)
 
-        pred_df = data.get_data_as_data_frame()
+        pred_df = data.get_data_as_dataframe()
         print("--- STEP 3: DataFrame created successfully. ---", flush=True)
         print(pred_df, flush=True)
 
