@@ -32,6 +32,7 @@ def predict_datapoint():
             preprocessor_path='artifacts/preprocessor.pkl')
         
         results = predict_pipeline.predict(pred_df)
+        print("Prediction result:", results[0])
         return render_template('home.html', results=results[0])
 
     except Exception as e:
