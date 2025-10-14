@@ -6,4 +6,4 @@ RUN pip install -r requirements.txt
 COPY artifacts/ ./artifacts/
 COPY . .
 
-CMD ["python", "application.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:${PORT}", "application:application"]
