@@ -46,6 +46,6 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'studentperformanceapp'
-        slot-name: 'production'
+        #slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_120890d369d84d7aafaeca48ac8881b4 }}
         images: 'pwnewregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}/mltest:${{ github.sha }}'
