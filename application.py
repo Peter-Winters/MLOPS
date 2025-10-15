@@ -12,14 +12,6 @@ preprocessor_path = 'artifacts/preprocessor.pkl'
 
 application=Flask(__name__)
 
-## Route for a home page
-
-# @application.route('/')
-# def index():
-#     return render_template('index.html') 
-
-# @application.route('/predictdata',methods=['GET','POST'])
-
 @application.route('/',methods=['GET','POST'])
 
 def predict_datapoint():
@@ -43,7 +35,7 @@ def predict_datapoint():
         if results[0] > 100:
             result = 100
         else:
-            result = results[0]
+            result = round(results[0],2)
         return render_template('home.html',results=result)
     
     
