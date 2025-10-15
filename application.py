@@ -14,11 +14,14 @@ application=Flask(__name__)
 
 ## Route for a home page
 
-@application.route('/')
-def index():
-    return render_template('index.html') 
+# @application.route('/')
+# def index():
+#     return render_template('index.html') 
 
-@application.route('/predictdata',methods=['GET','POST'])
+# @application.route('/predictdata',methods=['GET','POST'])
+
+@application.route('/',methods=['GET','POST'])
+
 def predict_datapoint():
     if request.method=='GET':
         return render_template('home.html')
@@ -37,7 +40,11 @@ def predict_datapoint():
         
         predict_pipeline=PredictPipeline(model_path=model_path,preprocessor_path=preprocessor_path)
         results=predict_pipeline.predict(pred_df)
-        return render_template('home.html',results=results[0])
+        if results[0] > 100:
+            result = 100
+        else:
+            result = results[0]
+        return render_template('home.html',results=result)
     
     
 
