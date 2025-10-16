@@ -26,14 +26,15 @@ jobs:
       run: pip install bandit
 
     - name: Run Bandit Scan
-      run: bandit -ll -ii -r . -f json -o bandit-report.json
+      run: bandit -r .
+      #run: bandit -ll -ii -r . -f json -o bandit-report.json
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-       name: bandit-findings
-       path: bandit-report.json
+    # - name: Upload Artifact
+    #   uses: actions/upload-artifact@v4
+    #   if: always()
+    #   with:
+    #    name: bandit-findings
+    #    path: bandit-report.json
       
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
