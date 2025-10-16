@@ -62,12 +62,15 @@ jobs:
 
     - name: Tag image for Docker Hub
       run: |
+        echo "Docker Hub user: '${{ secrets.DOCKER_HUB_USER }}'"
         docker tag mltest:${{ github.sha }} ${{ secrets.DOCKER_HUB_USER }}/mltest:${{ github.sha }}
     
     - name: Push image to Docker Hub (temporary for scan)
       run: |
+        echo "$DOCKER_HUB_USER"
         echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USER }}" --password-stdin
         docker push ${{ secrets.DOCKER_HUB_USER }}/mltest:${{ github.sha }}
+
     
     - name: Docker Scout Scan (visual SARIF)
       uses: docker/scout-action@v1.0.9
