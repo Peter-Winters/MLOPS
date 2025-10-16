@@ -34,31 +34,32 @@ jobs:
       with:
        name: bandit-findings
        path: bandit-report.json
-
+       
   image_scan:
     name: Build Image and Run Image Scan
     runs-on: ubuntu-latest
-
+  
     steps:
     - uses: actions/checkout@v2
-      
+        
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-
+  
     - name: Log in to registry
       uses: docker/login-action@v2
       with:
         registry: https://pwnewregistry.azurecr.io/
         username: ${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}
         password: ${{ secrets.AzureAppService_ContainerPassword_5b5b8c8c34ff4e8ea45b9065cd49cef9 }}
-
-    - name: Build container image (no push yet)
+  
+    - name: Build container image (load locally, no push)
       uses: docker/build-push-action@v3
       with:
         push: false
+        load: true
         tags: mltest:${{ github.sha }}
         file: ./Dockerfile
-    
+      
     - name: Docker Scout Scan
       env:
         DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -68,21 +69,21 @@ jobs:
         curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh
         sh install-scout.sh
     
-        # Authenticate
+        # Authenticate with Docker Hub
         echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
     
         # Scan the image
         docker scout quickview mltest:${{ github.sha }}
         docker scout cves mltest:${{ github.sha }} --exit-code
-
-    # Only push if scan passes
-    - name: Push verified image
+  
+    - name: Push verified image to ACR
       if: success()
       uses: docker/build-push-action@v3
       with:
         push: true
         tags: pwnewregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}/mltest:${{ github.sha }}
         file: ./Dockerfile
+
 
   deploy:
     runs-on: ubuntu-latest
