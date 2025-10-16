@@ -60,21 +60,32 @@ jobs:
         tags: mltest:${{ github.sha }}
         file: ./Dockerfile
       
+    # - name: Docker Scout Scan
+    #   env:
+    #     DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+    #     DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+    #   run: |
+    #     # Install Docker Scout CLI
+    #     curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh
+    #     sh install-scout.sh
+    
+    #     # Authenticate with Docker Hub
+    #     echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+    
+    #     # Scan the image
+    #     docker scout quickview mltest:${{ github.sha }}
+    #     docker scout cves mltest:${{ github.sha }} --exit-code
+
     - name: Docker Scout Scan
-      env:
-        DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-        DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
-      run: |
-        # Install Docker Scout CLI
-        curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh
-        sh install-scout.sh
-    
-        # Authenticate with Docker Hub
-        echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
-    
-        # Scan the image
-        docker scout quickview mltest:${{ github.sha }}
-        docker scout cves mltest:${{ github.sha }} --exit-code
+      uses: docker/scout-action@v1.0.9
+      with:
+        dockerhub-user: ${{ secrets.AZURE_REPO_USER }}
+        dockerhub-password: ${{ secrets.AZURE_REPO_PWD }}
+        command: quickview,cves
+        only-severities: critical,high
+        image: mltest:${{ github.sha }}
+        sarif-file: scout-report.sarif
+
   
     - name: Push verified image to ACR
       if: success()
