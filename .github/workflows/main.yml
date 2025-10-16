@@ -52,7 +52,7 @@ jobs:
         username: ${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}
         password: ${{ secrets.AzureAppService_ContainerPassword_5b5b8c8c34ff4e8ea45b9065cd49cef9 }}
 
-    - name: Build and push container image to registry
+    - name: Build container image (no push yet)
       uses: docker/build-push-action@v3
       with:
         push: false
@@ -60,12 +60,32 @@ jobs:
         file: ./Dockerfile
         
     - name: Docker Scout Scan
+      env:
+        DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+        DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
       run: |
+        # Install Docker Scout CLI
         curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh
         sh install-scout.sh
-        echo ${{ secrets.AZURE_REPO_PWD }} | docker login -u ${{ secrets.AZURE_REPO_USER }} --password-stdin
-        docker scout quickview
-        docker scout cves
+  
+        # Authenticate
+        echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+  
+        # login to ACR for pulling image metadata
+        echo "${{ secrets.AzureAppService_ContainerPassword_5b5b8c8c34ff4e8ea45b9065cd49cef9 }}" | docker login pwnewregistry.azurecr.io -u "${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}" --password-stdin
+  
+        # Run scans
+        docker scout quickview pwnewregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}/mltest:${{ github.sha }}
+        docker scout cves pwnewregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}/mltest:${{ github.sha }} --exit-code
+
+    # Only push if scan passes
+    - name: Push verified image
+      if: success()
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        tags: pwnewregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}/mltest:${{ github.sha }}
+        file: ./Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
