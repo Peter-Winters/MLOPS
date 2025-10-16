@@ -73,8 +73,11 @@ jobs:
         echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
     
         # Scan the image
-        docker scout quickview mltest:${{ github.sha }}
-        docker scout cves mltest:${{ github.sha }} --exit-code
+        # docker scout quickview mltest:${{ github.sha }}
+        # docker scout cves mltest:${{ github.sha }} --exit-code
+        docker scout cves mltest:${{ github.sha }} --exit-code --output sarif > scout-report.sarif
+        docker scout quickview mltest:${{ github.sha }} --output sarif > scout-quickview.sarif
+
 
     - name: Upload Docker Scout SARIF
       uses: github/codeql-action/upload-sarif@v3
