@@ -72,9 +72,11 @@ jobs:
         # Authenticate with Docker Hub
         echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
     
-        # Scan the image
-        docker scout cves mltest:${{ github.sha }} --exit-code --only-severities critical,high --output sarif > scout-report.sarif
-        docker scout quickview mltest:${{ github.sha }} --output sarif > scout-quickview.sarif
+        # Scan CVEs — fail only on critical/high
+        docker scout cves mltest:${{ github.sha }} --exit-code --only-severities critical,high --output sarif | tee scout-report.sarif
+    
+        # Quickview — always succeed, just output SARIF
+        docker scout quickview mltest:${{ github.sha }} --output sarif | tee scout-quickview.sarif
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
