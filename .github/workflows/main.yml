@@ -79,7 +79,7 @@ jobs:
         docker scout quickview mltest:${{ github.sha }} --output sarif > scout-quickview.sarif
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: docker-scout-findings
