@@ -73,7 +73,7 @@ jobs:
         echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
     
         # Scan CVEs — fail only on critical/high
-        docker scout cves mltest:${{ github.sha }} --exit-code --only-severities critical,high --output sarif | tee scout-report.sarif
+        docker scout cves mltest:${{ github.sha }} --exit-code --output sarif | tee scout-report.sarif
     
         # Quickview — always succeed, just output SARIF
         docker scout quickview mltest:${{ github.sha }} --output sarif | tee scout-quickview.sarif
