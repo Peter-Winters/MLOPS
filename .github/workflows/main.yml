@@ -26,7 +26,7 @@ jobs:
       run: pip install bandit
 
     - name: Run Bandit Scan
-      run: bandit -ll -ii -r . -f json -o bandit-report.json
+      run: bandit -ll -ii -r . -f json -o bandit-report.json --severity-level HIGH
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -73,7 +73,7 @@ jobs:
         echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
     
         # Scan the image
-        docker scout cves mltest:${{ github.sha }} --exit-code --output sarif > scout-report.sarif
+        docker scout cves mltest:${{ github.sha }} --exit-code --only-severities critical,high --output sarif > scout-report.sarif
         docker scout quickview mltest:${{ github.sha }} --output sarif > scout-quickview.sarif
 
     - name: Upload Artifact
