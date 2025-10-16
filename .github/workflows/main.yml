@@ -56,9 +56,9 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: false
-        tags: pwnewregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}/mltest:${{ github.sha }}
+        tags: mltest:${{ github.sha }}
         file: ./Dockerfile
-        
+    
     - name: Docker Scout Scan
       env:
         DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -71,13 +71,9 @@ jobs:
         # Authenticate
         echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
     
-        #Login to ACR
-        echo "${{ secrets.AzureAppService_ContainerPassword_5b5b8c8c34ff4e8ea45b9065cd49cef9 }}" | docker login pwnewregistry.azurecr.io -u "${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}" --password-stdin
-    
-        # Scan the local image
-        docker scout quickview pwnewregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}/mltest:${{ github.sha }}
-        docker scout cves pwnewregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_d8b1b90318444a6490ba5f9ea0394f0a }}/mltest:${{ github.sha }} --exit-code
-    
+        # Scan the image
+        docker scout quickview mltest:${{ github.sha }}
+        docker scout cves mltest:${{ github.sha }} --exit-code
 
     # Only push if scan passes
     - name: Push verified image
